@@ -1,6 +1,7 @@
 package com.pistolwhip.wheredafuqjamie
 
 import android.app.*
+import android.content.Intent
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -11,7 +12,12 @@ import androidx.core.app.NotificationCompat
 import java.util.Locale
 
 class AlarmService : Service(), TextToSpeech.OnInitListener {
-    companion object { private const val CHANNEL = "jamie_alarm"; private const val NOTIFICATION = 73 }
+    companion object {
+        private const val CHANNEL = "jamie_alarm"
+        private const val NOTIFICATION = 73
+        const val ACTION_ACTIVATE = "com.pistolwhip.wheredafuqjamie.ACTIVATE"
+        const val ACTION_DEACTIVATE = "com.pistolwhip.wheredafuqjamie.DEACTIVATE"
+    }
     private val handler = Handler(Looper.getMainLooper())
     private var active = false
     private var mediaPlayer: MediaPlayer? = null
@@ -21,19 +27,13 @@ class AlarmService : Service(), TextToSpeech.OnInitListener {
 
     override fun onCreate() { super.onCreate(); createChannel(); tts = TextToSpeech(this, this); torchId = findTorch() }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int { if (intent?.action == ACTION_DEACTIVATE) stopAlarm() else startAlarm(); return START_STICKY }
-
-    private fun startAlarm() {
-        if (active) return
-        active = true; startForeground(NOTIFICATION, notification()); maxVolumes(); tick(); writeLog("ALARM ACTIVATED")
-    }
-
+    private fun startAlarm() { if (active) return; active = true; startForeground(NOTIFICATION, notification()); maxVolumes(); tick(); writeLog("ALARM ACTIVATED") }
     private fun tick() {
         if (!active) return
         flashOn = !flashOn; setTorch(flashOn)
         if (Prefs.alarmType(this) == "voice") tts?.speak(Prefs.voice(this), TextToSpeech.QUEUE_FLUSH, null, "jamie_alarm") else playTone()
         handler.postDelayed({ tick() }, 3000L)
     }
-
     private fun playTone() { mediaPlayer?.release(); val uri = Prefs.alarmUri(this) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); mediaPlayer = MediaPlayer.create(this, uri)?.apply { setVolume(1f, 1f); start() } }
     private fun maxVolumes() { val am = getSystemService(AudioManager::class.java); intArrayOf(AudioManager.STREAM_ALARM, AudioManager.STREAM_RING, AudioManager.STREAM_NOTIFICATION, AudioManager.STREAM_MUSIC, AudioManager.STREAM_SYSTEM).forEach { runCatching { am.setStreamVolume(it, am.getStreamMaxVolume(it), 0) } } }
     private fun findTorch(): String? { val cm = getSystemService(CameraManager::class.java); return runCatching { cm.cameraIdList.firstOrNull { cm.getCameraCharacteristics(it).get(android.hardware.camera2.CameraCharacteristics.FLASH_INFO_AVAILABLE) == true } }.getOrNull() }
@@ -45,6 +45,4 @@ class AlarmService : Service(), TextToSpeech.OnInitListener {
     override fun onBind(intent: Intent?) = null
     override fun onInit(status: Int) { if (status == TextToSpeech.SUCCESS) tts?.language = Locale.US }
     override fun onDestroy() { handler.removeCallbacksAndMessages(null); mediaPlayer?.release(); tts?.shutdown(); setTorch(false); super.onDestroy() }
-
-    companion object Actions { const val ACTION_ACTIVATE = "com.pistolwhip.wheredafuqjamie.ACTIVATE"; const val ACTION_DEACTIVATE = "com.pistolwhip.wheredafuqjamie.DEACTIVATE" }
 }
