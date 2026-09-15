@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var alarmSummary: TextView
     private lateinit var alpha: SeekBar
     private lateinit var alarmSpinner: Spinner
+    private lateinit var volUp: CheckBox
+    private lateinit var volDown: CheckBox
+    private lateinit var swipe: CheckBox
     private var alarmUri: Uri? = null
     private var logUri: Uri? = null
     private var bgColor = Color.rgb(16,16,16)
@@ -71,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         alarmSummary = TextView(this).apply { text = "No alarm tone selected"; setTextColor(Color.WHITE); setPadding(0,12,0,6) }; root.addView(alarmSummary)
         root.addView(Button(this).apply { text = "Choose device alarm tone"; setOnClickListener { ringtonePicker.launch(Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply { putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM); putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true); putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false); putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, alarmUri) }) } })
         root.addView(label("Spoken phrase")); voice = edit(Prefs.voice(this)); root.addView(voice)
+        root.addView(label("Deactivation methods"))
+        volUp = CheckBox(this).apply { text = "Volume Up + Power"; isChecked = Prefs.deactVolUp(this@MainActivity); setTextColor(Color.WHITE) }; root.addView(volUp)
+        volDown = CheckBox(this).apply { text = "Volume Down + Power"; isChecked = Prefs.deactVolDown(this@MainActivity); setTextColor(Color.WHITE) }; root.addView(volDown)
+        swipe = CheckBox(this).apply { text = "On-screen swipe"; isChecked = Prefs.deactSwipe(this@MainActivity); setTextColor(Color.WHITE) }; root.addView(swipe)
         root.addView(label("App background color")); root.addView(colorButton(Prefs.bg(this), true))
         root.addView(label("Popup color")); root.addView(colorButton(Prefs.popup(this), false))
         root.addView(label("Transparency")); alpha = SeekBar(this).apply { max = 100; progress = Prefs.alpha(this@MainActivity) }; root.addView(alpha)
@@ -83,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveAndHome() {
         val type = if (alarmSpinner.selectedItemPosition == 1) "voice" else "tone"
-        Prefs.save(this, activate.text.toString(), deactivate.text.toString(), type, alarmUri, voice.text.toString(), bgColor, popupColor, alpha.progress, logUri)
+        Prefs.save(this, activate.text.toString(), deactivate.text.toString(), type, alarmUri, voice.text.toString(), bgColor, popupColor, alpha.progress, logUri, volUp.isChecked, volDown.isChecked, swipe.isChecked)
         Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show(); buildUi()
     }
 
