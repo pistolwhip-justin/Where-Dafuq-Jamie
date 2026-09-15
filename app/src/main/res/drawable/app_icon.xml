@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path android:fillColor="#17191C" android:pathData="M0,0h108v108h-108z" />
+
+    <!-- flashlight beam -->
+    <path android:fillColor="#E9EEF2" android:fillAlpha="0.82"
+        android:pathData="M72,16 L101,8 L84,48 L72,40 Z" />
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.55"
+        android:pathData="M76,17 L99,11 L84,40 L77,36 Z" />
+
+    <!-- sound waves -->
+    <path android:fillColor="#63F56B" android:fillAlpha="0"
+        android:strokeColor="#63F56B" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M18,42 Q5,54 18,66" />
+    <path android:fillColor="#63F56B" android:fillAlpha="0"
+        android:strokeColor="#63F56B" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M27,35 Q9,54 27,73" />
+    <path android:fillColor="#63F56B" android:fillAlpha="0"
+        android:strokeColor="#63F56B" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M90,42 Q103,54 90,66" />
+
+    <!-- tilted phone -->
+    <path android:fillColor="#D9DEE2" android:pathData="M43,24 L69,29 Q73,30 72,35 L64,80 Q63,84 59,83 L33,78 Q29,77 30,73 L38,28 Q39,23 43,24 Z" />
+    <path android:fillColor="#101214" android:pathData="M44,30 L66,34 L59,75 L37,71 Z" />
+    <path android:fillColor="#AFC0C8" android:pathData="M48,27 L59,29 L59,31 L48,29 Z" />
+    <path android:fillColor="#E9EEF2" android:pathData="M46,74 L52,75 L52,77 L46,76 Z" />
+</vector>
