@@ -14,6 +14,9 @@ object Prefs {
     private const val POPUP = "popup_color"
     private const val ALPHA = "alpha"
     private const val LOG_URI = "log_uri"
+    private const val DEACT_VOL_UP = "deact_vol_up"
+    private const val DEACT_VOL_DOWN = "deact_vol_down"
+    private const val DEACT_SWIPE = "deact_swipe"
 
     private fun p(c: Context) = c.getSharedPreferences(FILE, Context.MODE_PRIVATE)
     fun activate(c: Context) = p(c).getString(ACTIVATE, "Where Dafuq Jamie") ?: "Where Dafuq Jamie"
@@ -25,18 +28,14 @@ object Prefs {
     fun popup(c: Context) = p(c).getInt(POPUP, 0xFF2E7D32.toInt())
     fun alpha(c: Context) = p(c).getInt(ALPHA, 100)
     fun logUri(c: Context): Uri? = p(c).getString(LOG_URI, null)?.let(Uri::parse)
+    fun deactVolUp(c: Context) = p(c).getBoolean(DEACT_VOL_UP, true)
+    fun deactVolDown(c: Context) = p(c).getBoolean(DEACT_VOL_DOWN, true)
+    fun deactSwipe(c: Context) = p(c).getBoolean(DEACT_SWIPE, true)
 
-    fun save(c: Context, activate: String, deactivate: String, alarmType: String, alarmUri: Uri?, voice: String, bg: Int, popup: Int, alpha: Int, logUri: Uri?) {
-        p(c).edit()
-            .putString(ACTIVATE, activate.trim())
-            .putString(DEACTIVATE, deactivate.trim())
-            .putString(ALARM_TYPE, alarmType)
-            .putString(ALARM_URI, alarmUri?.toString())
-            .putString(VOICE, voice.trim())
-            .putInt(BG, bg)
-            .putInt(POPUP, popup)
-            .putInt(ALPHA, alpha.coerceIn(10, 100))
-            .putString(LOG_URI, logUri?.toString())
-            .apply()
+    fun save(c: Context, activate: String, deactivate: String, alarmType: String, alarmUri: Uri?, voice: String, bg: Int, popup: Int, alpha: Int, logUri: Uri?, volUp: Boolean, volDown: Boolean, swipe: Boolean) {
+        p(c).edit().putString(ACTIVATE, activate.trim()).putString(DEACTIVATE, deactivate.trim()).putString(ALARM_TYPE, alarmType)
+            .putString(ALARM_URI, alarmUri?.toString()).putString(VOICE, voice.trim()).putInt(BG, bg).putInt(POPUP, popup)
+            .putInt(ALPHA, alpha.coerceIn(10, 100)).putString(LOG_URI, logUri?.toString())
+            .putBoolean(DEACT_VOL_UP, volUp).putBoolean(DEACT_VOL_DOWN, volDown).putBoolean(DEACT_SWIPE, swipe).apply()
     }
 }
