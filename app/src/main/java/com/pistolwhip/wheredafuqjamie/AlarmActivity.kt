@@ -10,6 +10,9 @@ import android.widget.TextView
 class AlarmActivity : Activity() {
     private var downX = 0f
     private var downY = 0f
+    private var lastVolumeKey = -1
+    private var lastVolumeKeyTime = 0L
+    private val doubleTapWindowMs = 500L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +30,18 @@ class AlarmActivity : Activity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP && Prefs.deactVolUp(this)) { deactivate(); return true }
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && Prefs.deactVolDown(this)) { deactivate(); return true }
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && event.repeatCount == 0) {
+            val enabled = if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) Prefs.deactVolUp(this) else Prefs.deactVolDown(this)
+            val now = android.os.SystemClock.elapsedRealtime()
+            if (enabled && keyCode == lastVolumeKey && now - lastVolumeKeyTime <= doubleTapWindowMs) {
+                lastVolumeKey = -1
+                lastVolumeKeyTime = 0L
+                deactivate()
+                return true
+            }
+            lastVolumeKey = keyCode
+            lastVolumeKeyTime = now
+        }
         return super.onKeyDown(keyCode, event)
     }
 
